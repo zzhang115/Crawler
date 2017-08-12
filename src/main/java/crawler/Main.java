@@ -18,5 +18,6 @@ public class Main {
         String proxyFilePath = args[2];
         String logFilePath = args[3];
         CrawlerForAmazon crawler = new CrawlerForAmazon(proxyFilePath, logFilePath);
+
     }
 }

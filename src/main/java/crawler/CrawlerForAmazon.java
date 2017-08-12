@@ -19,7 +19,7 @@ public class CrawlerForAmazon {
     private List<String> titleList;
     private List<String> categoryList;
     private BufferedWriter logBufferWriter;
-    private int index = 0;
+    private int proxyIndex = 0;
 
     public CrawlerForAmazon(String proxy_file, String log_file) {
         initProxyIPList(proxy_file);
@@ -34,7 +34,6 @@ public class CrawlerForAmazon {
             while((line = bufferedReader.readLine()) != null) {
                 String[] proxy = line.split(",");
                 String ip = proxy[0].trim();
-                System.out.println(ip);
                 proxyList.add(ip);
             }
         } catch(FileNotFoundException e) {
@@ -49,5 +48,41 @@ public class CrawlerForAmazon {
                 return new PasswordAuthentication(authUser, authPassword.toCharArray());
             }
         });
+
+        System.setProperty("http.proxyUser", authUser);
+        System.setProperty("http.proxyPassword", authPassword);
+        System.setProperty("http.proxyPort", "61336");
+    }
+
+    private void initHtmlSelector() {
+        titleList = new ArrayList<String>();
+        titleList.add(" > div > div > div > div.a-fixed-left-grid-col.a-col-right > div.a-row.a-spacing-small > div:nth-child(1)  > a > h2");
+        titleList.add(" > div > div > div > div.a-fixed-left-grid-col.a-col-right > div.a-row.a-spacing-small > a > h2");
+
+        categoryList = new ArrayList<String>();
+        categoryList.add("#refinements > div.categoryRefinementsSection > ul.forExpando > li > a > span.boldRefinementLink");
+        categoryList.add("#refinements > div.categoryRefinementsSection > ul.forExpando > li:nth-child(1) > a > span.boldRefinementLink");
+    }
+
+    private void initLog(String logPath) {
+        try {
+            File log = new File(logPath);
+            if (!log.exists()) {
+                log.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(log.getAbsoluteFile());
+            logBufferWriter = new BufferedWriter(fileWriter);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setProxy() {
+        if (proxyIndex == proxyList.size()) {
+            proxyIndex = 0;
+        }
+        String proxy = proxyList.get(proxyIndex++);
+        System.setProperty("socketProxyHost", proxy);
     }
 }
+
