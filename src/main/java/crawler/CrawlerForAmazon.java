@@ -1,5 +1,8 @@
 package crawler;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.*;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -23,6 +26,7 @@ public class CrawlerForAmazon {
 
     public CrawlerForAmazon(String proxy_file, String log_file) {
         initProxyIPList(proxy_file);
+        testProxy();
     }
 
     private void initProxyIPList(String proxyfile) {
@@ -52,6 +56,14 @@ public class CrawlerForAmazon {
         System.setProperty("http.proxyUser", authUser);
         System.setProperty("http.proxyPassword", authPassword);
         System.setProperty("http.proxyPort", "61336");
+        String test_url = "http://www.toolsvoid.com/what-is-my-ip-address";
+        try {
+            Document doc = Jsoup.connect(test_url).userAgent(USER_AGENT).timeout(10000).get();
+            String iP = doc.select("body > section.articles-section > div > div > div > div.col-md-8.display-flex > div > div.table-responsive > table > tbody > tr:nth-child(1) > td:nth-child(2) > strong").first().text(); //get used IP.
+            System.out.println("IP-Address: " + iP);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initHtmlSelector() {
@@ -84,5 +96,19 @@ public class CrawlerForAmazon {
         String proxy = proxyList.get(proxyIndex++);
         System.setProperty("socketProxyHost", proxy);
     }
+
+    private void testProxy() {
+        System.setProperty("socksProxyHost", "199.101.97.149"); // set proxy server
+        System.setProperty("socksProxyPort", "61336"); // set proxy port
+        String test_url = "http://www.toolsvoid.com/what-is-my-ip-address";
+        try {
+            Document doc = Jsoup.connect(test_url).userAgent(USER_AGENT).timeout(10000).get();
+            String iP = doc.select("body > section.articles-section > div > div > div > div.col-md-8.display-flex > div > div.table-responsive > table > tbody > tr:nth-child(1) > td:nth-child(2) > strong").first().text(); //get used IP.
+            System.out.println("IP-Address: " + iP);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 
