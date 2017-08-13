@@ -30,7 +30,18 @@ public class CrawlerForAmazon {
 
     public CrawlerForAmazon(String proxy_file, String log_file) {
         initProxyIPList(proxy_file);
-//        testProxy();
+        initHtmlSelector();
+        initLog(log_file);
+    }
+
+    public void cleanup() {
+        if (logBufferWriter != null) {
+            try {
+                logBufferWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void initProxyIPList(String proxyfile) {
